@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { assets } from '../../assets/assets';
 import CartTotal from '../../components/CartTotal';
 import Title from '../../components/Title';
@@ -10,7 +11,7 @@ import './PlaceOrder.css';
 
 const PlaceOrder = () => {
 
-    const { getTotalCartAmount, token, food_list, cartItems, url } = useContext(StoreContext);
+    const { getTotalCartAmount, token, food_list, cartItems, url, backendUrl, setCartItems } = useContext(StoreContext);
 
     const navigate = useNavigate();
 
@@ -34,33 +35,56 @@ const PlaceOrder = () => {
     };
 
     const placeOrder = async (event) => {
-        event.preventDefault();
-        let orderItems = [];
-        food_list.forEach((item) => {
-            if (cartItems[item._id] > 0) {
-                let itemInfo = { ...item, quantity: cartItems[item._id] }; // Properly clone item with quantity
-                orderItems.push(itemInfo);
-            }
-        });
-
-        let orderData = {
-            address: data,
-            items: orderItems,
-            amount: getTotalCartAmount() + 2, // Correct calculation of amount
-        };
-
         try {
-            let response = await axios.post(`${url}/api/order/place`, orderData, { headers: { token } });
-            if (response.data.success) {
-                const { session_url } = response.data;
-                window.location.replace(session_url);
-            } else {
-                alert("Error placing order");
+            event.preventDefault();
+            let orderItems = [];
+            food_list.forEach((item) => {
+                if (cartItems[item._id] > 0) {
+                    let itemInfo = { ...item, quantity: cartItems[item._id] }; // Properly clone item with quantity
+                    orderItems.push(itemInfo);
+                }
+            });
+
+            let orderData = {
+                address: data,
+                items: orderItems,
+                amount: getTotalCartAmount() + 2, // Correct calculation of amount
+            };
+
+            switch (method) {
+                //API call for COD
+                case 'cod':
+                    const response = await axios.post(backendUrl + '/api/placeorder/place', orderData, { headers: { token } });
+                    console.log(response.data);
+
+                    if (response.data.success) {
+                        setCartItems({})
+                        navigate('/myorders')
+                    } else {
+                        toast.error(response.data.message);
+                    }
+                    break;
+
+                default:
+                    break;
             }
         } catch (error) {
-            console.error("Error placing order:", error);
-            alert("Error placing order");
+            console.log(error);
+            toast.error(error.message);
         }
+
+        // try {
+        //     let response = await axios.post(`${url}/api/placeorder/place`, orderData, { headers: { token } });
+        //     if (response.data.success) {
+        //         const { session_url } = response.data;
+        //         window.location.replace(session_url);
+        //     } else {
+        //         alert("Error placing order");
+        //     }
+        // } catch (error) {
+        //     console.error("Error placing order:", error);
+        //     alert("Error placing order");
+        // }
     };
 
     useEffect(() => {
@@ -73,7 +97,7 @@ const PlaceOrder = () => {
 
 
     return (
-        <div className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
+        <form className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t' onSubmit={placeOrder}>
             {/*-----------left side ------------ */}
             <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
 
@@ -94,7 +118,7 @@ const PlaceOrder = () => {
                     <input className='border border-gray-300 rounded py-1.5 px-3.5 w-full' name='zipcode' onChange={onChangeHandler} value={data.zipcode} type="number" placeholder='Zip code' required />
                     <input className='border border-gray-300 rounded py-1.5 px-3.5 w-full' name='country' onChange={onChangeHandler} value={data.country} type="text" placeholder='Country' required />
                 </div>
-                <input className='border border-gray-300 rounded py-1.5 px-3.5 w-full' name='phone' onChange={onChangeHandler} value={data.phone} type="number" placeholder='Phone' required />
+                <input className='border border-gray-300 rounded py-1.5 px-3.5 w-full' name='phone' onChange={onChangeHandler} value={data.phone} type="text" placeholder='Phone' required />
             </div>
             {/*-----------Right side ------------ */}
             <div className='mt-8'>
@@ -121,11 +145,11 @@ const PlaceOrder = () => {
                     </div>
 
                     <div className='w-full text-end mt-8'>
-                        <button onClick={() => navigate('/myorders')} className='bg-primary text-white px-16 py-3 text-sm border rounded hover:bg-black hover:text-white transition-all'>PLACE ORDER</button>
+                        <button type='submit' className='bg-primary text-white px-16 py-3 text-sm border rounded hover:bg-black hover:text-white transition-all'>PLACE ORDER</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     );
 };
 
