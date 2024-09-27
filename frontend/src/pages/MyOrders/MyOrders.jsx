@@ -29,6 +29,7 @@ const MyOrders = () => {
                         item['payment'] = order.payment
                         item['paymentMethod'] = order.paymentMethod
                         item['date'] = order.date
+                        item['amount'] = order.amount
                         allOrdersItems.push(item)
                     })
                 })
@@ -61,7 +62,7 @@ const MyOrders = () => {
                             <div>
                                 <p className='sm:text-base font-medium'>{order.name}</p>
                                 <div className='flex items-center gap-3 text-base text-gray-800'>
-                                    <p className='text-lg'>{order.price}</p>
+                                    <p className='text-lg'>${order.amount}.00</p>
                                     <p>Quantity : {order.quantity}</p>
                                     <p></p>
                                 </div>
