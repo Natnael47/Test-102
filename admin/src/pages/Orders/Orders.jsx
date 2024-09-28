@@ -23,7 +23,7 @@ const Orders = ({ token }) => {
             return null;
         }
         try {
-            const response = await axios.post(backendUrl + "/api/placeorder/list", {}, { headers: { token } })
+            const response = await axios.post(backendUrl + "/api/order/list", {}, { headers: { token } })
             if (response.data.success) {
                 setOrders(response.data.orders);
                 console.log(response.data.orders);
@@ -40,7 +40,7 @@ const Orders = ({ token }) => {
     const statusHandler = async (event, orderId) => {
         try {
             // Send a request to update the order status
-            const response = await axios.post(backendUrl + "/api/placeorder/status", {
+            const response = await axios.post(backendUrl + "/api/order/status", {
                 orderId,
                 status: event.target.value, // Send the selected status value
             }, { headers: { token } });

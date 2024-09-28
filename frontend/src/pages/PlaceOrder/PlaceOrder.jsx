@@ -54,7 +54,7 @@ const PlaceOrder = () => {
             switch (method) {
                 //API call for COD
                 case 'cod':
-                    const response = await axios.post(backendUrl + '/api/placeorder/place', orderData, { headers: { token } });
+                    const response = await axios.post(backendUrl + '/api/order/place', orderData, { headers: { token } });
                     console.log(response.data);
 
                     if (response.data.success) {
@@ -67,7 +67,7 @@ const PlaceOrder = () => {
 
                 //API call for Stripe    
                 case 'stripe':
-                    const responseStripe = await axios.post(backendUrl + '/api/placeorder/stripe', orderData, { headers: { token } });
+                    const responseStripe = await axios.post(backendUrl + '/api/order/stripe', orderData, { headers: { token } });
                     console.log(responseStripe.data);
 
                     if (responseStripe.data.success) {
