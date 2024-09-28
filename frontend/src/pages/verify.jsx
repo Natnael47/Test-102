@@ -1,10 +1,11 @@
 import axios from 'axios';
 import React, { useContext, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { StoreContext } from '../../context/StoreContext';
-import "./Verify.css";
+import { toast } from 'react-toastify';
+import { StoreContext } from '../context/StoreContext';
 
-const Verify = () => {
+const verify = () => {
+
     const { token, setCartItems, backendUrl } = useContext(StoreContext);
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -39,12 +40,10 @@ const Verify = () => {
     }, [token]);
 
     return (
-        <div className='verify'>
-            <div className="spinner">
+        <div>
 
-            </div>
         </div>
     )
 }
 
-export default Verify
+export default verify

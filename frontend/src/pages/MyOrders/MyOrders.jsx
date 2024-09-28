@@ -7,7 +7,7 @@ import './MyOrders.css';
 
 const MyOrders = () => {
 
-    const [data, setData] = useState([]);
+    const [orders, setOrders] = useState([]);
     const { url, token, backendUrl } = useContext(StoreContext);
 
     //  const fetchOrders = async () => {
@@ -23,6 +23,7 @@ const MyOrders = () => {
             const response = await axios.post(backendUrl + "/api/placeorder/userorders", {}, { headers: { token } })
             if (response.data.success) {
                 let allOrdersItems = []
+                // console.log(response.data.orders);
                 response.data.orders.map((order) => {
                     order.items.map((item) => {
                         item['status'] = order.status
@@ -33,7 +34,7 @@ const MyOrders = () => {
                         allOrdersItems.push(item)
                     })
                 })
-                setData(allOrdersItems.reverse())
+                setOrders(allOrdersItems.reverse())
 
             }
 
@@ -55,30 +56,34 @@ const MyOrders = () => {
             </div>
 
             <div>
-                {data.map((order, index) => (
-                    <div key={index} className="py-4 border-t border-b text-gray-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <div className='flex items-start gap-6 text-sm'>
-                            <img className='w-16 sm:w-20' src={assets.parcel_icon} alt='Parcel Icon' />
-                            <div>
-                                <p className='sm:text-base font-medium'>{order.name}</p>
-                                <div className='flex items-center gap-3 text-base text-gray-800'>
-                                    <p className='text-lg'>${order.amount}.00</p>
-                                    <p>Quantity : {order.quantity}</p>
-                                    <p></p>
+                {orders.map((order, index) => {
+                    return (
+                        <div key={index} className="py-4 border-t border-b text-gray-800 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div className='flex items-start gap-6 text-sm'>
+                                <img className='w-16 sm:w-20' src={assets.parcel_icon} alt='Parcel Icon' />
+                                <div>
+                                    <p className='sm:text-base font-medium'>
+                                        {order.name}
+                                    </p>
+                                    <div className='flex items-center gap-3 text-base text-gray-800'>
+                                        <p className='text-lg'>${order.amount}.00</p>
+                                        <p>Quantity : {order.quantity}</p>
+                                        <p></p>
+                                    </div>
+                                    <p className='mt-1'>Date: <span className='text-gray-800'> {new Date(order.date).toDateString()} </span> </p>
+                                    <p className='mt-1'>Payment: <span className='text-gray-800'> {order.paymentMethod} </span> </p>
                                 </div>
-                                <p className='mt-2'>Date: <span className='text-gray-800'>  25, Jun 2022 </span> </p>
+                            </div>
+                            <div className='md:w-1/2 flex justify-between'>
+                                <div className='flex items-center gap-2'>
+                                    <p className='min-w-2 h-2 rounded-full bg-green-600'></p>
+                                    <p><b>{order.status}</b></p>
+                                </div>
+                                <button onClick={loadOrderData} className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
                             </div>
                         </div>
-                        <div className='md:w-1/2 flex justify-between'>
-                            <div className='flex items-center gap-2'>
-                                <p className='min-w-2 h-2 rounded-full bg-green-600'></p>
-                                <p><b>{order.status}</b></p>
-                            </div>
-                            <button className='border px-4 py-2 text-sm font-medium rounded-sm'>Track Order</button>
-                        </div>
-
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );
